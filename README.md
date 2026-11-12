@@ -1,10 +1,11 @@
 # 🥹 CresScript 🥹
 
-A lightweight userscript for thoita with some utilities.
+A userscript for thoita with some utilities.
 
 ## features
 - **Force focus:** so you can always toggle attack
-- **Simple GUI:** toggle using `\`.
+- **Simple GUI:** toggle using `\`, draggable.
+- **AFK Kick Alert** alerts you before being AFK kicked.
 
 ## how to install
 1. Install [Tampermonkey](https://www.tampermonkey.net/).
@@ -14,7 +15,9 @@ A lightweight userscript for thoita with some utilities.
 
 ## gui
 Press `\` to open or close the tracker GUI.
+Draggable (drag the top).
 
 GUI displays:
 - **Session Time:** time since the page loaded.
 - **Last Input:** time since the last keyboard input.
+- **AFK KICK** Option to send alert before AFK kick.
