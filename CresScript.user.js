@@ -3,7 +3,7 @@
 // @description  various utils for thoita, including force focus
 // @namespace    http://tampermonkey.net/
 // @author       cres
-// @version      2026-11-12
+// @version      2026-11-13
 // @match        https://world.thoita.com/
 // @run-at       document-start
 // @grant        none
@@ -12,7 +12,7 @@
 (function() {
     'use strict';
 
-    const SCRIPT_VERSION = 2;
+    const SCRIPT_VERSION = 3;
     const VERSION_URL = 'https://raw.githubusercontent.com/Ch3nm/thoita-script/main/version.txt';
     const ALERT_URL = 'https://raw.githubusercontent.com/Ch3nm/thoita-script/main/red-siren-alert.mp3';
 
@@ -85,7 +85,7 @@
             <div id="CS-header" style="cursor:move;font-weight:bold;margin-bottom:8px;">CresScript</div>
             Session time: <span id="CS-playtime">00:00:00</span><br>
             Time since last input: <span id="CS-lastInput">00:00:00</span><br><br>
-            <label><input id="CS-alarm" type="checkbox" checked> AFK kick warning</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><span id="CS-alarm" style="width:12px;height:12px;border:1px solid white;display:inline-block;text-align:center;line-height:12px;font-size:11px;"></span>AFK kick warning</label>
         `;
 
         document.body.appendChild(gui);
@@ -103,7 +103,30 @@
         document.head.appendChild(font);
 
         const header = gui.querySelector('#CS-header');
+
+        // alarm fixes
+        let alarmEnabled = true;
         const alarm = gui.querySelector('#CS-alarm');
+
+        function updateAlarmCheckbox() {
+            alarm.textContent = alarmEnabled ? '✓' : '';
+        }
+
+        alarm.addEventListener('click', e => {
+            e.preventDefault();
+            e.stopPropagation();
+            alarmEnabled = !alarmEnabled;
+            updateAlarmCheckbox();
+
+            if (!alarmEnabled) {
+                warning.style.display = 'none';
+                alarmActive = false;
+                alert.pause();
+                alert.currentTime = 0;
+            }
+        });
+
+        updateAlarmCheckbox();
 
         // drag gui
         header.addEventListener('pointerdown', e => {
@@ -149,7 +172,7 @@
             gui.querySelector('#CS-playtime').textContent = formatTime(now - playtime);
             gui.querySelector('#CS-lastInput').textContent = formatTime(idle, true);
 
-            if (alarm.checked && idle >= 870000) {
+            if (alarmEnabled && idle >= 870000) {
                 warning.style.display = 'block';
 
                 if (!alarmActive) {
