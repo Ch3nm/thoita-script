@@ -12,7 +12,7 @@
 (function() {
     'use strict';
 
-    const SCRIPT_VERSION = 3;
+    const SCRIPT_VERSION = 3.1;
     const VERSION_URL = 'https://raw.githubusercontent.com/Ch3nm/thoita-script/main/version.txt';
     const ALERT_URL = 'https://raw.githubusercontent.com/Ch3nm/thoita-script/main/red-siren-alert.mp3';
     const CHAT_URL = 'wss://hack.chat/chat-ws';
@@ -98,7 +98,7 @@
             <div style="margin-top:10px;">
                 Room: <span id="CS-room" style="cursor:pointer;">not set</span><br>
                 Username: <span id="CS-username" style="cursor:pointer;">user</span><br>
-                <span id="CS-connect" style="cursor:pointer;text-decoration:underline;">Connect chat (p to open)</span>
+                <span id="CS-connect" style="cursor:pointer;text-decoration:underline;">Connect chat (' to open)</span>
             </div>
         `;
 
@@ -175,9 +175,11 @@
         // open menu, (default key being backslash)
         window.addEventListener('keydown', e => {
             if (e.key === '\\') {
+                e.preventDefault();
+                e.stopImmediatePropagation();
                 gui.style.display = gui.style.display === 'none' ? 'block' : 'none';
             }
-        });
+        }, true);
 
         // time formatting
         function formatTime(ms, short = false) {
@@ -215,10 +217,10 @@
 
         const chatMenu = document.createElement('div');
         chatMenu.id = 'CS-chat';
-        chatMenu.style.cssText = 'position:fixed;top:100px;left:100px;width:300px;background:transparent;color:white;padding:10px;z-index:999998;display:none;font:13px Comfortaa,sans-serif;text-shadow:0 1px 3px black;user-select:none;';
+        chatMenu.style.cssText = 'position:fixed;bottom:20px;right:20px;width:300px;background:transparent;color:white;padding:10px;z-index:999998;display:none;font:13px Comfortaa,sans-serif;text-shadow:0 1px 3px black;user-select:none;';
 
         chatMenu.innerHTML = `
-            <div id="CS-chat-header" style="cursor:move;font-weight:bold;margin-bottom:8px;">Chat</div>
+            <div id="CS-chat-header" style="cursor:move;font-weight:bold;margin-bottom:8px;">Chat (click & drag here)</div>
             <div id="CS-chat-status" style="font-size:11px;margin-bottom:6px;">Not connected</div>
             <div id="CS-chat-messages" style="height:200px;overflow-y:auto;overflow-wrap:anywhere;white-space:pre-wrap;"></div>
             <div id="CS-chat-composer" style="margin-top:8px;cursor:pointer;">Click here to send a message...</div>
@@ -303,13 +305,13 @@
                     addChatMessage(data.nick || 'Unknown', data.text || '');
                 } else if (data.cmd === 'onlineSet') {
                     chatStatus.textContent = `Connected to #${roomCode} (${data.nicks?.length || 0} users)`;
-                    addChatMessage('System', 'Connected to room.');
+                    addChatMessage('S', 'Connected to room.');
                 } else if (data.cmd === 'onlineAdd') {
-                    addChatMessage('System', `${data.nick} joined.`);
+                    addChatMessage('S', `${data.nick} joined.`);
                 } else if (data.cmd === 'onlineRemove') {
-                    addChatMessage('System', `${data.nick} left.`);
+                    addChatMessage('S', `${data.nick} left.`);
                 } else if (data.cmd === 'info' || data.cmd === 'warn' || data.cmd === 'error') {
-                    addChatMessage('System', data.text || data.message || data.cmd);
+                    addChatMessage('S', data.text || data.message || data.cmd);
                 }
             });
 
@@ -367,7 +369,7 @@
 
         // open chat menu
         window.addEventListener('keydown', e => {
-            if (e.key.toLowerCase() === 'p' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+            if (e.key === "'" && !e.ctrlKey && !e.metaKey && !e.altKey) {
                 e.preventDefault();
                 e.stopImmediatePropagation();
                 chatMenu.style.display = chatMenu.style.display === 'none' ? 'block' : 'none';
